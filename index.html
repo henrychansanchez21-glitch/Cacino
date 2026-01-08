@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maya Casino VIP 🇬🇹</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --gold: #ffd700; --blue: #0092bc; --dark: #0f172a; --win: #22c55e; --card: #1e293b; --danger: #ef4444; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -16,23 +17,47 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; width: 100%; }
         .menu-card { background: var(--card); padding: 20px 10px; border-radius: 15px; border: 1px solid #334155; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.9rem; }
         .game-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
-        
-        /* Aviator Stage Corregido */
-        .aviator-stage { position: relative; width: 100%; height: 200px; background: radial-gradient(circle, #1e293b 0%, #000 100%); border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        #plane-img { position: absolute; bottom: 20px; left: 10%; width: 50px; z-index: 10; filter: drop-shadow(0 0 8px var(--gold)); transition: transform 0.1s linear; }
-        .mult-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5rem; font-weight: 900; z-index: 5; text-shadow: 0 0 20px #000; color: white; }
 
-        .display-area { font-size: 2.5rem; margin: 15px 0; min-height: 80px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 15px; border: 1px solid #334155; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; box-sizing: border-box; }
+        /* DADO 3D REAL */
+        .dice-table { width: 100%; height: 200px; background: radial-gradient(#15803d, #064e3b); border-radius: 20px; border: 6px solid #5d2b06; position: relative; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
+        .dice-scene { width: 60px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .dice-face { position: absolute; width: 60px; height: 60px; background: white; border: 2px solid #ddd; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; color: #000; border-radius: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .f1 { transform: rotateY(0deg) translateZ(30px); }
+        .f2 { transform: rotateY(90deg) translateZ(30px); }
+        .f3 { transform: rotateY(180deg) translateZ(30px); }
+        .f4 { transform: rotateY(-90deg) translateZ(30px); }
+        .f5 { transform: rotateX(90deg) translateZ(30px); }
+        .f6 { transform: rotateX(-90deg) translateZ(30px); }
+        .rolling { animation: crazyRoll 0.2s infinite linear; }
+        @keyframes crazyRoll { from { transform: rotateX(0) rotateY(0) rotateZ(0); } to { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); } }
+
+        /* AVIATOR */
+        .aviator-sky { width: 100%; height: 200px; background: linear-gradient(#0f172a, #1e293b); border-radius: 15px; position: relative; overflow: hidden; border: 2px solid #334155; margin-bottom: 15px; }
+        .plane { position: absolute; bottom: 20px; left: 20px; font-size: 2.5rem; transition: all 0.1s linear; z-index: 10; }
+        .cloud { position: absolute; color: rgba(255,255,255,0.2); font-size: 2rem; animation: cloudMove 3s linear infinite; }
+        @keyframes cloudMove { from { right: -50px; } to { right: 110%; } }
+
+        /* SLOTS */
+        .slot-container { display: flex; justify-content: center; gap: 10px; background: #000; padding: 20px; border-radius: 15px; border: 4px solid #334155; margin-bottom: 20px; overflow: hidden; }
+        .slot-window { width: 80px; height: 100px; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
+        .reel-strip { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .slot-symbol { height: 100px; display: flex; justify-content: center; align-items: center; font-size: 3rem; color: #000; }
+        .blur { filter: blur(4px); }
+
         .btn-play { background: var(--gold); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-redeem { background: var(--win); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; }
         .btn-back { background: none; color: #94a3b8; border: none; margin-top: 20px; cursor: pointer; text-decoration: underline; }
-        .oferta-manual { background: rgba(255,215,0,0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
-
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; }
+        #win-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+    <div id="win-overlay">
+        <h1 style="color:var(--gold); font-size:3.5rem; margin:0;">¡GANASTE!</h1>
+        <div id="win-display-amt" style="font-size:2.5rem; margin:15px 0;">Q0.00</div>
+        <button class="btn-play" style="width: 200px;" onclick="closeWin()">CERRAR</button>
+    </div>
 
     <header>
         <div><div style="font-weight: 900; color: var(--blue);">MAYA CASINO</div><div id="header-id" style="font-size: 0.7rem; color: #94a3b8;">ID: ...</div></div>
@@ -43,110 +68,85 @@
         <div id="menu-view" class="view active">
             <h2>🎰 SALÓN VIP</h2>
             <div class="grid">
-                <div class="menu-card" onclick="showView('aviator-view')" style="border: 2px solid var(--danger); grid-column: span 2;">✈️ MAYA AVIATOR</div>
-                <div class="menu-card" onclick="showView('slots-view')">🎰 SLOTS</div>
-                <div class="menu-card" onclick="showView('dice-view')">🎲 DADOS</div>
-                <div class="menu-card" onclick="showView('coin-view')">🪙 CARA/ESCUDO</div>
-                <div class="menu-card" onclick="showView('color-view')">🔴 ROJO/NEGRO</div>
+                <div class="menu-card" onclick="showView('credit-card-view')" style="border: 2px solid #ff4757; grid-column: span 2;">💳 MI TARJETA / CRÉDITO</div>
+                <div class="menu-card" onclick="showView('aviator-view')" style="border: 1px solid var(--danger);">✈️ AVIATOR</div>
+                <div class="menu-card" onclick="showView('dice-view')" style="border: 1px solid var(--win);">🎲 DADOS 3D</div>
+                <div class="menu-card" onclick="showView('slots-view')" style="border: 1px solid var(--gold);">🎰 SLOTS (x10)</div>
                 <div class="menu-card" onclick="showView('payment-view')" style="border-color: var(--blue);">💳 MIS DATOS</div>
                 <div class="menu-card" onclick="showView('exchange-view')" style="border-color: var(--win);">💰 COBRAR</div>
             </div>
-            <button class="btn-play" onclick="showView('recharge-view')" style="margin-top:20px; background:var(--blue); color:white;">🎟️ RECARGAS / OFERTAS</button>
         </div>
 
-        <div id="aviator-view" class="view">
+        <div id="exchange-view" class="view">
+            <h2 style="color:var(--win)">💰 CANJEAR</h2>
             <div class="game-box">
-                <div class="aviator-stage">
-                    <div id="aviator-res" class="mult-text">1.00x</div>
-                    <img id="plane-img" src="https://img.icons8.com/emoji/96/airplane-emoji.png">
-                </div>
-                <input type="number" id="bet-aviator" value="10" placeholder="Apuesta Q">
-                <button id="btn-avi-start" class="btn-play" onclick="startAviator()">APOSTAR</button>
-                <button id="btn-avi-cash" class="btn-play" style="background:var(--win); display:none;" onclick="cashoutAviator()">RETIRAR</button>
-            </div>
-            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
-        </div>
-
-        <div id="slots-view" class="view">
-            <div class="game-box">
-                <h2>🎰 SLOTS VIP</h2>
-                <div class="display-area" id="slot-res">🎰🎰🎰</div>
-                <input type="number" id="bet-slots" value="10">
-                <button class="btn-play" onclick="playSlots()">GIRAR</button>
+                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(12000, 100)">12k pts -> Q100</button>
+                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(25000, 200)">25k pts -> Q200</button>
+                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(36000, 250)">36k pts -> Q250</button>
+                <button class="btn-play" onclick="solicitarCobro(65000, 335)">65k pts -> Q335</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
         <div id="dice-view" class="view">
+            <h2>🎲 DADOS 3D</h2>
             <div class="game-box">
-                <h2>🎲 DADOS</h2>
-                <div class="display-area" id="dice-res">🎲</div>
-                <input type="number" id="dice-guess" placeholder="Número (1-6)">
+                <div class="dice-table">
+                    <div id="dice-cube" class="dice-scene">
+                        <div class="dice-face f1">1</div><div class="dice-face f2">2</div><div class="dice-face f3">3</div>
+                        <div class="dice-face f4">4</div><div class="dice-face f5">5</div><div class="dice-face f6">6</div>
+                    </div>
+                </div>
+                <input type="number" id="dice-guess" placeholder="Adivina (1-6)">
                 <input type="number" id="bet-dice" value="10">
-                <button class="btn-play" onclick="playDice()">LANZAR</button>
+                <button id="btn-dice" class="btn-play" style="background:var(--win); color:white;" onclick="playDice()">LANZAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="coin-view" class="view">
+        <div id="aviator-view" class="view">
+            <h2>✈️ AVIATOR</h2>
             <div class="game-box">
-                <h2>🪙 CARA O ESCUDO</h2>
-                <div class="display-area" id="coin-res">🪙</div>
-                <select id="coin-choice"><option value="CARA">CARA</option><option value="ESCUDO">ESCUDO</option></select>
-                <input type="number" id="bet-coin" value="10">
-                <button class="btn-play" onclick="playCoin()">LANZAR</button>
+                <div class="aviator-sky" id="sky">
+                    <div id="aviator-mult-display" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; font-weight:900;">1.00x</div>
+                    <div id="plane" class="plane">✈️</div>
+                </div>
+                <input type="number" id="bet-aviator" value="10">
+                <button id="btn-aviator" class="btn-play" style="background:var(--danger); color:white;" onclick="startAviator()">DESPEGAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="color-view" class="view">
+        <div id="slots-view" class="view">
+            <h2>🎰 SLOTS</h2>
             <div class="game-box">
-                <h2>🔴 ROJO O NEGRO</h2>
-                <div class="display-area" id="color-res">⚪</div>
-                <select id="color-choice"><option value="ROJO">ROJO</option><option value="NEGRO">NEGRO</option></select>
-                <input type="number" id="bet-color" value="10">
-                <button class="btn-play" onclick="playColor()">APOSTAR</button>
+                <div class="slot-container"><div id="reel1" class="reel-strip"></div><div id="reel2" class="reel-strip"></div><div id="reel3" class="reel-strip"></div></div>
+                <input type="number" id="bet-slots" value="10">
+                <button id="btn-slots-spin" class="btn-play" onclick="playSlots()">GIRAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
         <div id="payment-view" class="view">
+            <h2>💳 MIS DATOS</h2>
             <div class="game-box">
-                <h2 style="color:var(--blue)">💳 MIS DATOS</h2>
-                <input type="text" id="dat-nombre" placeholder="Nombre Completo">
-                <input type="number" id="dat-cuenta" placeholder="No. de Cuenta">
-                <select id="dat-banco">
-                    <option value="Banrural">Banrural</option>
-                    <option value="Industrial (BI)">Industrial (BI)</option>
-                    <option value="G&T Continental">G&T Continental</option>
-                    <option value="BAM">BAM</option>
-                    <option value="BAC">BAC</option>
-                    <option value="Micoope">Micoope</option>
-                </select>
-                <select id="dat-tipo-cuenta">
-                    <option value="Ahorro">Ahorro</option>
-                    <option value="Monetaria">Monetaria</option>
-                </select>
-                <button class="btn-play" onclick="savePaymentData()">GUARDAR</button>
+                <input type="text" id="dat-nombre" placeholder="Nombre Titular">
+                <input type="number" id="dat-cuenta" placeholder="Número de Cuenta">
+                <select id="dat-banco"><option>Banrural</option><option>Industrial</option><option>G&T</option><option>BAM</option><option>BAC</option></select>
+                <button class="btn-play" onclick="savePaymentData()">GUARDAR DATOS</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="exchange-view" class="view">
+        <div id="credit-card-view" class="view">
+            <h2>💳 MI TARJETA GOLD</h2>
             <div class="game-box">
-                <h2 style="color:var(--win)">💰 CANJES DISPONIBLES</h2>
-                <button class="btn-redeem" onclick="solicitarCobro(12000)"><span>Q12,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(20000)"><span>Q20,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(36000)"><span>Q36,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(55000)"><span>Q55,000</span> <b>COBRAR</b></button>
-            </div>
-            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
-        </div>
-
-        <div id="recharge-view" class="view">
-            <div class="game-box">
-                <h2 style="color:var(--gold)">🎟️ RECARGAS Y OFERTAS</h2>
-                <div id="dynamic-promos">Cargando...</div>
+                <div style="background:linear-gradient(135deg, #001f3f, #0092bc); padding:20px; border-radius:15px; height:150px; text-align:left;">
+                    <div style="text-align:right">Q <span id="v-card-balance">0.00</span></div>
+                    <div id="v-card-name" style="margin-top:60px; font-weight:bold;">...</div>
+                </div>
+                <div id="request-section" style="margin-top:15px;"><button class="btn-play" onclick="requestCard()">SOLICITAR TARJETA</button></div>
+                <div id="transfer-section" style="display:none; margin-top:15px;"><input type="number" id="transfer-amount" placeholder="Monto Q"><button class="btn-play" onclick="transferToCasino()">PASAR AL JUEGO</button></div>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
@@ -160,108 +160,120 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
         let userId = localStorage.getItem('casino_id') || "MAYA_" + Math.random().toString(36).substring(7).toUpperCase();
-        localStorage.setItem('casino_id', userId);
-        document.getElementById('header-id').innerText = "ID: " + userId;
+        localStorage.setItem('casino_id', userId); document.getElementById('header-id').innerText = "ID: " + userId;
         
-        let balance = 0; const userRef = doc(db, "usuarios", userId);
+        let balance = 0, cardBalance = 0;
+        const userRef = doc(db, "usuarios", userId);
 
         onSnapshot(userRef, (s) => {
-            if(s.exists()){ balance = s.data().saldo; document.getElementById('balance').innerText = balance.toLocaleString(); }
-            else { setDoc(userRef, { saldo: 0 }); }
-        });
-
-        // Ofertas dinámicas desde Admin
-        onSnapshot(collection(db, "ofertas_manuales"), (snap) => {
-            const container = document.getElementById('dynamic-promos'); container.innerHTML = "";
-            snap.forEach(d => {
-                const o = d.data();
-                container.innerHTML += `<div class="oferta-manual"><h4>${o.titulo}</h4><p>${o.descripcion}</p><button class="btn-play" style="height:35px;font-size:0.7rem;" onclick="reclamarOferta('${o.titulo}')">RECLAMAR</button></div>`;
-            });
-        });
-
-        // --- LÓGICA AVIATOR CORREGIDA ---
-        let aviInt, mult = 1.0, flying = false;
-        const plane = document.getElementById('plane-img');
-        const multDisplay = document.getElementById('aviator-res');
-
-        window.startAviator = async () => {
-            const bet = parseFloat(document.getElementById('bet-aviator').value);
-            if(bet > balance || bet <= 0) return alert("Saldo insuficiente");
-            
-            flying = true; mult = 1.0; 
-            await updateDoc(userRef, { saldo: balance - bet });
-            
-            document.getElementById('btn-avi-start').style.display = 'none';
-            document.getElementById('btn-avi-cash').style.display = 'block';
-            
-            plane.style.transition = "none"; plane.style.left = "10%"; plane.style.bottom = "20px";
-            
-            let crashPoint = (Math.random() * (4.0 - 1.1) + 1.1).toFixed(2);
-            
-            aviInt = setInterval(() => {
-                mult += 0.03;
-                multDisplay.innerText = mult.toFixed(2) + "x";
-                plane.style.left = (10 + (mult * 15)) + "%";
-                plane.style.bottom = (20 + (mult * 10)) + "px";
-                
-                if(mult >= crashPoint){
-                    clearInterval(aviInt); flying = false;
-                    multDisplay.innerText = "¡SE FUE!";
-                    plane.style.transition = "all 0.5s ease-in";
-                    plane.style.left = "150%";
-                    setTimeout(() => {
-                        document.getElementById('btn-avi-start').style.display = 'block';
-                        document.getElementById('btn-avi-cash').style.display = 'none';
-                    }, 2000);
+            if(s.exists()){
+                const d = s.data(); balance = d.saldo || 0; cardBalance = d.saldoTarjeta || 0;
+                document.getElementById('balance').innerText = balance.toLocaleString();
+                document.getElementById('v-card-balance').innerText = cardBalance.toLocaleString();
+                if(d.tarjetaAprobada){
+                    document.getElementById('v-card-name').innerText = d.nombreTarjeta || "SOCIO VIP";
+                    document.getElementById('request-section').style.display = 'none';
+                    document.getElementById('transfer-section').style.display = 'block';
                 }
-            }, 100);
-        };
+            } else { setDoc(userRef, { saldo: 0, saldoTarjeta: 0 }); }
+        });
 
-        window.cashoutAviator = async () => {
-            if(!flying) return;
-            clearInterval(aviInt); flying = false;
-            const win = Math.floor(parseFloat(document.getElementById('bet-aviator').value) * mult);
-            await updateDoc(userRef, { saldo: balance + win });
-            alert("¡Ganaste Q" + win + "!");
-            document.getElementById('btn-avi-start').style.display = 'block';
-            document.getElementById('btn-avi-cash').style.display = 'none';
-        };
-
-        // --- RESTO DE JUEGOS ---
-        window.playSlots = async () => { const b = parseFloat(document.getElementById('bet-slots').value); if(b > balance) return; const items = ["🍒","💎","🔔"]; const r1=items[Math.floor(Math.random()*3)], r2=items[Math.floor(Math.random()*3)], r3=items[Math.floor(Math.random()*3)]; document.getElementById('slot-res').innerText = r1+r2+r3; if(r1===r2 && r2===r3){ await updateDoc(userRef, { saldo: balance + (b*10) }); alert("¡JACKPOT!"); } else { await updateDoc(userRef, { saldo: balance - b }); } };
-        window.playDice = async () => { const b = parseFloat(document.getElementById('bet-dice').value); const g = parseInt(document.getElementById('dice-guess').value); if(b > balance) return; const r = Math.floor(Math.random()*6)+1; document.getElementById('dice-res').innerText = "🎲 " + r; if(g===r){ await updateDoc(userRef, { saldo: balance + (b*5) }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
-        window.playCoin = async () => { const b = parseFloat(document.getElementById('bet-coin').value); const c = document.getElementById('coin-choice').value; if(b > balance) return; const r = Math.random() < 0.5 ? "CARA" : "ESCUDO"; document.getElementById('coin-res').innerText = r; if(c===r){ await updateDoc(userRef, { saldo: balance + b }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
-        window.playColor = async () => { const b = parseFloat(document.getElementById('bet-color').value); const c = document.getElementById('color-choice').value; if(b > balance) return; const r = Math.random() < 0.5 ? "ROJO" : "NEGRO"; document.getElementById('color-res').innerText = r === "ROJO" ? "🔴" : "⚫"; if(c===r){ await updateDoc(userRef, { saldo: balance + b }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
-
-        // --- SISTEMA DE COBROS Y DATOS ---
-        window.savePaymentData = async () => {
-            const nom = document.getElementById('dat-nombre').value;
-            const cue = document.getElementById('dat-cuenta').value;
-            const ban = document.getElementById('dat-banco').value;
-            const tip = document.getElementById('dat-tipo-cuenta').value;
-            if(!nom || !cue) return alert("Completa los datos");
-            await updateDoc(userRef, { datosPago: { nombre: nom, cuenta: cue, banco: ban, tipo: tip } });
-            alert("Datos Guardados"); showView('menu-view');
-        };
-
-        window.solicitarCobro = async (premio) => {
+        // --- COBROS (CONEXIÓN CON PANEL) ---
+        window.solicitarCobro = async (pts, cash) => {
             const s = await getDoc(userRef); const d = s.data().datosPago;
-            if(!d || !d.nombre) return alert("Registra tus datos primero.");
-            if(balance < premio) return alert("Saldo insuficiente.");
-            if(confirm("¿Cobrar Q"+premio+"?")){
-                await updateDoc(userRef, { saldo: balance - premio });
-                await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "COBRO", monto: premio, nombre: d.nombre, banco: d.banco, cuenta: d.cuenta, tipoCuenta: d.tipo, estado: "Pendiente", fecha: new Date().toLocaleString() });
-                alert("Solicitud Enviada");
+            if(!d || !d.nombre) { alert("Primero llena 'MIS DATOS'"); showView('payment-view'); return; }
+            if(balance < pts) return alert("Puntos insuficientes");
+            const phone = prompt("Tu WhatsApp para el pago:");
+            if(phone && phone.length >= 8){
+                await updateDoc(userRef, { saldo: balance - pts });
+                await addDoc(collection(db, "solicitudes_globales"), {
+                    usuario: userId, tipo: "COBRO", monto: cash, puntos: pts,
+                    telefono: phone, nombre: d.nombre, cuenta: d.cuenta, banco: d.banco,
+                    estado: "Pendiente", fecha: new Date().toLocaleString()
+                });
+                alert("¡Solicitud enviada al Admin!");
             }
         };
 
-        window.reclamarOferta = async (t) => {
-            const tel = prompt("Ingresa tu WhatsApp:"); if(!tel) return;
-            await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "RECLAMO", titulo: t, telefono: tel, estado: "Pendiente" });
-            alert("Reclamo enviado.");
+        // --- DADOS 3D ---
+        window.playDice = async () => {
+            const bet = parseFloat(document.getElementById('bet-dice').value);
+            const guess = parseInt(document.getElementById('dice-guess').value);
+            const cube = document.getElementById('dice-cube');
+            if(isNaN(guess) || guess < 1 || guess > 6 || bet > balance || bet <= 0) return;
+            document.getElementById('btn-dice').disabled = true;
+            cube.classList.add('rolling');
+            setTimeout(async () => {
+                const res = Math.floor(Math.random() * 6) + 1;
+                cube.classList.remove('rolling');
+                const rot = { 1:'rotateX(0deg) rotateY(0deg)', 2:'rotateY(-90deg)', 3:'rotateY(-180deg)', 4:'rotateY(90deg)', 5:'rotateX(-90deg)', 6:'rotateX(90deg)' };
+                cube.style.transform = rot[res];
+                setTimeout(async () => {
+                    if(res === guess) { const win = bet * 5; await updateDoc(userRef, { saldo: balance + (win - bet) }); celebrateWin(win); }
+                    else { await updateDoc(userRef, { saldo: balance - bet }); }
+                    document.getElementById('btn-dice').disabled = false;
+                }, 800);
+            }, 1200);
         };
 
+        // --- AVIATOR ---
+        let aviActive = false;
+        window.startAviator = async () => {
+            const bet = parseFloat(document.getElementById('bet-aviator').value);
+            if(bet > balance || aviActive) return;
+            aviActive = true; const btn = document.getElementById('btn-aviator');
+            btn.innerText = "COBRAR"; let mult = 1.00; const crash = (Math.random()*4+1.1).toFixed(2);
+            const plane = document.getElementById('plane');
+            const loop = setInterval(async () => {
+                mult += 0.03; document.getElementById('aviator-mult-display').innerText = mult.toFixed(2)+"x";
+                plane.style.bottom = (20+(mult*15))+"px"; plane.style.left = (20+(mult*12))+"px";
+                if(mult >= crash){
+                    clearInterval(loop); aviActive=false; document.getElementById('aviator-mult-display').innerText = "BOOM!";
+                    await updateDoc(userRef, { saldo: balance - bet });
+                    setTimeout(()=>{btn.innerText="DESPEGAR"; btn.onclick=startAviator;}, 2000);
+                }
+            }, 100);
+            btn.onclick = async () => {
+                if(aviActive){
+                    clearInterval(loop); aviActive=false; const win = Math.floor(bet * parseFloat(document.getElementById('aviator-mult-display').innerText));
+                    await updateDoc(userRef, { saldo: balance + (win - bet) }); celebrateWin(win);
+                    btn.innerText="DESPEGAR"; btn.onclick=startAviator;
+                }
+            };
+        };
+
+        // --- SLOTS ---
+        const syms = ["💎", "7️⃣", "⭐", "🍒", "🍋", "🔔", "🍉", "🍇"];
+        const strips = document.querySelectorAll('.reel-strip');
+        strips.forEach(s => { s.innerHTML = Array(40).fill(0).map(() => `<div class="slot-symbol">${syms[Math.floor(Math.random()*8)]}</div>`).join(''); });
+        window.playSlots = async () => {
+            const b = parseFloat(document.getElementById('bet-slots').value);
+            if(b > balance || b <= 0) return;
+            const btn = document.getElementById('btn-slots-spin'); btn.disabled = true;
+            const res = (Math.random() < 0.2) ? Array(3).fill(syms[Math.floor(Math.random()*8)]) : [syms[Math.floor(Math.random()*8)], syms[Math.floor(Math.random()*8)], syms[Math.floor(Math.random()*8)]];
+            strips.forEach((s, i) => {
+                s.classList.add('blur'); s.lastElementChild.innerText = res[i];
+                s.style.transition = `transform ${1.5+(i*0.5)}s cubic-bezier(0.45,0.05,0.55,0.95)`;
+                s.style.transform = `translateY(-${(s.children.length-1)*100}px)`;
+            });
+            setTimeout(async () => {
+                if(res[0] === res[1] && res[1] === res[2]) { const w = b*10; await updateDoc(userRef, { saldo: balance + w }); celebrateWin(w); }
+                else { await updateDoc(userRef, { saldo: balance - b }); }
+                setTimeout(() => { strips.forEach(s => { s.classList.remove('blur'); s.style.transition='none'; s.style.transform='translateY(0px)'; s.firstElementChild.innerText=s.lastElementChild.innerText; }); btn.disabled=false; }, 500);
+            }, 3000);
+        };
+
+        // --- GENERALES ---
+        window.savePaymentData = async () => {
+            const n = document.getElementById('dat-nombre').value; const c = document.getElementById('dat-cuenta').value;
+            const b = document.getElementById('dat-banco').value;
+            if(n && c) { await updateDoc(userRef, { datosPago: { nombre: n, cuenta: c, banco: b } }); alert("Datos guardados."); }
+        };
+        window.celebrateWin = (a) => { document.getElementById('win-display-amt').innerText = "Q" + a.toLocaleString(); document.getElementById('win-overlay').style.display = "flex"; confetti({ particleCount: 150 }); };
+        window.closeWin = () => { document.getElementById('win-overlay').style.display = "none"; };
         window.showView = (id) => { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+        window.transferToCasino = async () => { const a = parseFloat(document.getElementById('transfer-amount').value); if(a > 0 && a <= cardBalance) await updateDoc(userRef, { saldo: balance + a, saldoTarjeta: cardBalance - a }); };
+        window.requestCard = async () => { await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "SOLICITUD_TARJETA", estado: "Pendiente" }); alert("Solicitud enviada."); };
     </script>
 </body>
 </html>
