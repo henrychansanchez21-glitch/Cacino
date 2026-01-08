@@ -2,46 +2,39 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Maya Casino VIP 🇬🇹</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <style>
         :root { --gold: #ffd700; --blue: #0092bc; --dark: #0f172a; --win: #22c55e; --card: #1e293b; --danger: #ef4444; }
-        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: #000; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--blue); }
-        .balance-pill { background: rgba(255, 215, 0, 0.1); padding: 8px 15px; border-radius: 50px; border: 2px solid var(--gold); font-size: 1.1rem; font-weight: bold; color: var(--gold); }
-        main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .view { display: none; width: 100%; max-width: 500px; animation: fadeIn 0.3s ease; text-align: center; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--dark); color: white; font-family: sans-serif; margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        header { background: #000; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--blue); }
+        .balance-pill { background: rgba(255, 215, 0, 0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--gold); color: var(--gold); font-weight: bold; }
+        main { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .view { display: none; width: 100%; animation: fadeIn 0.2s ease; }
         .active { display: block; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; width: 100%; }
-        .menu-card { background: var(--card); padding: 20px 10px; border-radius: 15px; border: 1px solid #334155; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.9rem; }
-        .game-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
-        
-        /* Aviator Stage Corregido */
-        .aviator-stage { position: relative; width: 100%; height: 200px; background: radial-gradient(circle, #1e293b 0%, #000 100%); border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 1px solid #334155; }
-        #plane-img { position: absolute; bottom: 20px; left: 10%; width: 50px; z-index: 10; filter: drop-shadow(0 0 8px var(--gold)); transition: transform 0.1s linear; }
-        .mult-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5rem; font-weight: 900; z-index: 5; text-shadow: 0 0 20px #000; color: white; }
-
-        .display-area { font-size: 2.5rem; margin: 15px 0; min-height: 80px; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 15px; border: 1px solid #334155; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; box-sizing: border-box; }
-        .btn-play { background: var(--gold); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-redeem { background: var(--win); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; }
-        .btn-back { background: none; color: #94a3b8; border: none; margin-top: 20px; cursor: pointer; text-decoration: underline; }
-        .oferta-manual { background: rgba(255,215,0,0.05); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
+        .menu-card { background: var(--card); padding: 15px 5px; border-radius: 12px; border: 1px solid #334155; text-align: center; font-weight: bold; font-size: 0.8rem; }
+        .game-box { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #334155; width: 100%; text-align: center; }
+        .display-area { font-size: 2.5rem; margin: 15px 0; background: #000; border-radius: 10px; padding: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; font-size: 1rem; }
+        .btn-play { background: var(--gold); color: #000; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 10px; }
+        .btn-redeem { background: var(--win); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .btn-back { background: #334155; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; margin-top: 15px; }
+        .aviator-stage { position: relative; width: 100%; height: 150px; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+        #plane-img { position: absolute; bottom: 15px; left: 5%; width: 35px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <header>
-        <div><div style="font-weight: 900; color: var(--blue);">MAYA CASINO</div><div id="header-id" style="font-size: 0.7rem; color: #94a3b8;">ID: ...</div></div>
+        <div><div style="font-weight: bold; color: var(--blue);">MAYA CASINO</div><div id="header-id" style="font-size: 0.6rem; color: #94a3b8;">ID: ...</div></div>
         <div class="balance-pill">Q <span id="balance">0.00</span></div>
     </header>
 
     <main>
         <div id="menu-view" class="view active">
-            <h2>🎰 SALÓN VIP</h2>
             <div class="grid">
                 <div class="menu-card" onclick="showView('aviator-view')" style="border: 2px solid var(--danger); grid-column: span 2;">✈️ MAYA AVIATOR</div>
                 <div class="menu-card" onclick="showView('slots-view')">🎰 SLOTS</div>
@@ -51,35 +44,21 @@
                 <div class="menu-card" onclick="showView('payment-view')" style="border-color: var(--blue);">💳 MIS DATOS</div>
                 <div class="menu-card" onclick="showView('exchange-view')" style="border-color: var(--win);">💰 COBRAR</div>
             </div>
-            <button class="btn-play" onclick="showView('recharge-view')" style="margin-top:20px; background:var(--blue); color:white;">🎟️ RECARGAS / OFERTAS</button>
+            <button class="btn-play" onclick="showView('recharge-view')" style="background:var(--blue); color:white; margin-top:15px;">🎟️ RECARGAS / OFERTAS</button>
         </div>
 
         <div id="aviator-view" class="view">
             <div class="game-box">
-                <div class="aviator-stage">
-                    <div id="aviator-res" class="mult-text">1.00x</div>
-                    <img id="plane-img" src="https://img.icons8.com/emoji/96/airplane-emoji.png">
-                </div>
-                <input type="number" id="bet-aviator" value="10" placeholder="Apuesta Q">
+                <div class="aviator-stage"><div id="aviator-res" style="font-size:2.5rem; margin-top:40px;">1.00x</div><img id="plane-img" src="https://img.icons8.com/emoji/96/airplane-emoji.png"></div>
+                <input type="number" id="bet-aviator" value="10">
                 <button id="btn-avi-start" class="btn-play" onclick="startAviator()">APOSTAR</button>
                 <button id="btn-avi-cash" class="btn-play" style="background:var(--win); display:none;" onclick="cashoutAviator()">RETIRAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="slots-view" class="view">
-            <div class="game-box">
-                <h2>🎰 SLOTS VIP</h2>
-                <div class="display-area" id="slot-res">🎰🎰🎰</div>
-                <input type="number" id="bet-slots" value="10">
-                <button class="btn-play" onclick="playSlots()">GIRAR</button>
-            </div>
-            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
-        </div>
-
         <div id="dice-view" class="view">
             <div class="game-box">
-                <h2>🎲 DADOS</h2>
                 <div class="display-area" id="dice-res">🎲</div>
                 <input type="number" id="dice-guess" placeholder="Número (1-6)">
                 <input type="number" id="bet-dice" value="10">
@@ -90,7 +69,6 @@
 
         <div id="coin-view" class="view">
             <div class="game-box">
-                <h2>🪙 CARA O ESCUDO</h2>
                 <div class="display-area" id="coin-res">🪙</div>
                 <select id="coin-choice"><option value="CARA">CARA</option><option value="ESCUDO">ESCUDO</option></select>
                 <input type="number" id="bet-coin" value="10">
@@ -101,7 +79,6 @@
 
         <div id="color-view" class="view">
             <div class="game-box">
-                <h2>🔴 ROJO O NEGRO</h2>
                 <div class="display-area" id="color-res">⚪</div>
                 <select id="color-choice"><option value="ROJO">ROJO</option><option value="NEGRO">NEGRO</option></select>
                 <input type="number" id="bet-color" value="10">
@@ -110,46 +87,30 @@
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
+        <div id="exchange-view" class="view">
+            <div class="game-box">
+                <h3 style="color:var(--win)">COBROS DISPONIBLES</h3>
+                <button class="btn-redeem" onclick="solicitarCobro(12000)"><span>Q12,000</span> <b>COBRAR</b></button>
+                <button class="btn-redeem" onclick="solicitarCobro(20000)"><span>Q20,000</span> <b>COBRAR</b></button>
+            </div>
+            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
+        </div>
+
+        <div id="slots-view" class="view">
+            <div class="game-box"><div id="slot-res" class="display-area">🎰🎰🎰</div><input type="number" id="bet-slots" value="10"><button class="btn-play" onclick="playSlots()">GIRAR</button></div>
+            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
+        </div>
+
         <div id="payment-view" class="view">
             <div class="game-box">
-                <h2 style="color:var(--blue)">💳 MIS DATOS</h2>
                 <input type="text" id="dat-nombre" placeholder="Nombre Completo">
                 <input type="number" id="dat-cuenta" placeholder="No. de Cuenta">
-                <select id="dat-banco">
-                    <option value="Banrural">Banrural</option>
-                    <option value="Industrial (BI)">Industrial (BI)</option>
-                    <option value="G&T Continental">G&T Continental</option>
-                    <option value="BAM">BAM</option>
-                    <option value="BAC">BAC</option>
-                    <option value="Micoope">Micoope</option>
-                </select>
-                <select id="dat-tipo-cuenta">
-                    <option value="Ahorro">Ahorro</option>
-                    <option value="Monetaria">Monetaria</option>
-                </select>
                 <button class="btn-play" onclick="savePaymentData()">GUARDAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
-
-        <div id="exchange-view" class="view">
-            <div class="game-box">
-                <h2 style="color:var(--win)">💰 CANJES DISPONIBLES</h2>
-                <button class="btn-redeem" onclick="solicitarCobro(12000)"><span>Q12,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(20000)"><span>Q20,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(36000)"><span>Q36,000</span> <b>COBRAR</b></button>
-                <button class="btn-redeem" onclick="solicitarCobro(55000)"><span>Q55,000</span> <b>COBRAR</b></button>
-            </div>
-            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
-        </div>
-
-        <div id="recharge-view" class="view">
-            <div class="game-box">
-                <h2 style="color:var(--gold)">🎟️ RECARGAS Y OFERTAS</h2>
-                <div id="dynamic-promos">Cargando...</div>
-            </div>
-            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
-        </div>
+        
+        <div id="recharge-view" class="view"><div class="game-box"><h3>OFERTAS</h3><div id="dynamic-promos">No hay ofertas hoy.</div></div><button class="btn-back" onclick="showView('menu-view')">Volver</button></div>
     </main>
 
     <script type="module">
@@ -159,109 +120,38 @@
         const firebaseConfig = { apiKey: "AIzaSyDusYsceOFaSRl7a9UNjYYVVX4scR2J2iY", authDomain: "cacino-ff54f.firebaseapp.com", projectId: "cacino-ff54f", storageBucket: "cacino-ff54f.firebasestorage.app", messagingSenderId: "783971947416", appId: "1:783971947416:web:21001456f59817888511ed" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-        let userId = localStorage.getItem('casino_id') || "MAYA_" + Math.random().toString(36).substring(7).toUpperCase();
+        let userId = localStorage.getItem('casino_id') || "MAYA_" + Math.floor(Math.random()*9999);
         localStorage.setItem('casino_id', userId);
         document.getElementById('header-id').innerText = "ID: " + userId;
         
         let balance = 0; const userRef = doc(db, "usuarios", userId);
+        onSnapshot(userRef, (s) => { if(s.exists()){ balance = s.data().saldo; document.getElementById('balance').innerText = balance.toLocaleString(); } else { setDoc(userRef, { saldo: 0 }); } });
 
-        onSnapshot(userRef, (s) => {
-            if(s.exists()){ balance = s.data().saldo; document.getElementById('balance').innerText = balance.toLocaleString(); }
-            else { setDoc(userRef, { saldo: 0 }); }
-        });
+        window.showView = (id) => { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); };
 
-        // Ofertas dinámicas desde Admin
-        onSnapshot(collection(db, "ofertas_manuales"), (snap) => {
-            const container = document.getElementById('dynamic-promos'); container.innerHTML = "";
-            snap.forEach(d => {
-                const o = d.data();
-                container.innerHTML += `<div class="oferta-manual"><h4>${o.titulo}</h4><p>${o.descripcion}</p><button class="btn-play" style="height:35px;font-size:0.7rem;" onclick="reclamarOferta('${o.titulo}')">RECLAMAR</button></div>`;
-            });
-        });
-
-        // --- LÓGICA AVIATOR CORREGIDA ---
-        let aviInt, mult = 1.0, flying = false;
-        const plane = document.getElementById('plane-img');
-        const multDisplay = document.getElementById('aviator-res');
-
-        window.startAviator = async () => {
-            const bet = parseFloat(document.getElementById('bet-aviator').value);
-            if(bet > balance || bet <= 0) return alert("Saldo insuficiente");
-            
-            flying = true; mult = 1.0; 
-            await updateDoc(userRef, { saldo: balance - bet });
-            
-            document.getElementById('btn-avi-start').style.display = 'none';
-            document.getElementById('btn-avi-cash').style.display = 'block';
-            
-            plane.style.transition = "none"; plane.style.left = "10%"; plane.style.bottom = "20px";
-            
-            let crashPoint = (Math.random() * (4.0 - 1.1) + 1.1).toFixed(2);
-            
-            aviInt = setInterval(() => {
-                mult += 0.03;
-                multDisplay.innerText = mult.toFixed(2) + "x";
-                plane.style.left = (10 + (mult * 15)) + "%";
-                plane.style.bottom = (20 + (mult * 10)) + "px";
-                
-                if(mult >= crashPoint){
-                    clearInterval(aviInt); flying = false;
-                    multDisplay.innerText = "¡SE FUE!";
-                    plane.style.transition = "all 0.5s ease-in";
-                    plane.style.left = "150%";
-                    setTimeout(() => {
-                        document.getElementById('btn-avi-start').style.display = 'block';
-                        document.getElementById('btn-avi-cash').style.display = 'none';
-                    }, 2000);
-                }
-            }, 100);
-        };
-
-        window.cashoutAviator = async () => {
-            if(!flying) return;
-            clearInterval(aviInt); flying = false;
-            const win = Math.floor(parseFloat(document.getElementById('bet-aviator').value) * mult);
-            await updateDoc(userRef, { saldo: balance + win });
-            alert("¡Ganaste Q" + win + "!");
-            document.getElementById('btn-avi-start').style.display = 'block';
-            document.getElementById('btn-avi-cash').style.display = 'none';
-        };
-
-        // --- RESTO DE JUEGOS ---
-        window.playSlots = async () => { const b = parseFloat(document.getElementById('bet-slots').value); if(b > balance) return; const items = ["🍒","💎","🔔"]; const r1=items[Math.floor(Math.random()*3)], r2=items[Math.floor(Math.random()*3)], r3=items[Math.floor(Math.random()*3)]; document.getElementById('slot-res').innerText = r1+r2+r3; if(r1===r2 && r2===r3){ await updateDoc(userRef, { saldo: balance + (b*10) }); alert("¡JACKPOT!"); } else { await updateDoc(userRef, { saldo: balance - b }); } };
+        // LÓGICA DE TODOS LOS JUEGOS
         window.playDice = async () => { const b = parseFloat(document.getElementById('bet-dice').value); const g = parseInt(document.getElementById('dice-guess').value); if(b > balance) return; const r = Math.floor(Math.random()*6)+1; document.getElementById('dice-res').innerText = "🎲 " + r; if(g===r){ await updateDoc(userRef, { saldo: balance + (b*5) }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
         window.playCoin = async () => { const b = parseFloat(document.getElementById('bet-coin').value); const c = document.getElementById('coin-choice').value; if(b > balance) return; const r = Math.random() < 0.5 ? "CARA" : "ESCUDO"; document.getElementById('coin-res').innerText = r; if(c===r){ await updateDoc(userRef, { saldo: balance + b }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
         window.playColor = async () => { const b = parseFloat(document.getElementById('bet-color').value); const c = document.getElementById('color-choice').value; if(b > balance) return; const r = Math.random() < 0.5 ? "ROJO" : "NEGRO"; document.getElementById('color-res').innerText = r === "ROJO" ? "🔴" : "⚫"; if(c===r){ await updateDoc(userRef, { saldo: balance + b }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
+        window.playSlots = async () => { const b = parseFloat(document.getElementById('bet-slots').value); if(b > balance) return; const items = ["🍒","💎","🔔"]; const r1=items[Math.floor(Math.random()*3)], r2=items[Math.floor(Math.random()*3)], r3=items[Math.floor(Math.random()*3)]; document.getElementById('slot-res').innerText = r1+r2+r3; if(r1===r2 && r2===r3){ await updateDoc(userRef, { saldo: balance + (b*10) }); } else { await updateDoc(userRef, { saldo: balance - b }); } };
 
-        // --- SISTEMA DE COBROS Y DATOS ---
-        window.savePaymentData = async () => {
-            const nom = document.getElementById('dat-nombre').value;
-            const cue = document.getElementById('dat-cuenta').value;
-            const ban = document.getElementById('dat-banco').value;
-            const tip = document.getElementById('dat-tipo-cuenta').value;
-            if(!nom || !cue) return alert("Completa los datos");
-            await updateDoc(userRef, { datosPago: { nombre: nom, cuenta: cue, banco: ban, tipo: tip } });
-            alert("Datos Guardados"); showView('menu-view');
+        // AVIATOR
+        let aviInt, mult = 1.0, flying = false;
+        window.startAviator = async () => {
+            const bet = parseFloat(document.getElementById('bet-aviator').value); if(bet > balance) return;
+            flying = true; mult = 1.0; await updateDoc(userRef, { saldo: balance - bet });
+            document.getElementById('btn-avi-start').style.display = 'none'; document.getElementById('btn-avi-cash').style.display = 'block';
+            let crash = (Math.random() * 3 + 1.1);
+            aviInt = setInterval(() => {
+                mult += 0.05; document.getElementById('aviator-res').innerText = mult.toFixed(2) + "x";
+                if(mult >= crash){ clearInterval(aviInt); flying = false; document.getElementById('aviator-res').innerText = "¡SE FUE!"; setTimeout(() => { document.getElementById('btn-avi-start').style.display = 'block'; document.getElementById('btn-avi-cash').style.display = 'none'; }, 2000); }
+            }, 100);
         };
+        window.cashoutAviator = async () => { if(!flying) return; clearInterval(aviInt); flying = false; await updateDoc(userRef, { saldo: balance + Math.floor(parseFloat(document.getElementById('bet-aviator').value)*mult) }); document.getElementById('btn-avi-start').style.display = 'block'; document.getElementById('btn-avi-cash').style.display = 'none'; };
 
-        window.solicitarCobro = async (premio) => {
-            const s = await getDoc(userRef); const d = s.data().datosPago;
-            if(!d || !d.nombre) return alert("Registra tus datos primero.");
-            if(balance < premio) return alert("Saldo insuficiente.");
-            if(confirm("¿Cobrar Q"+premio+"?")){
-                await updateDoc(userRef, { saldo: balance - premio });
-                await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "COBRO", monto: premio, nombre: d.nombre, banco: d.banco, cuenta: d.cuenta, tipoCuenta: d.tipo, estado: "Pendiente", fecha: new Date().toLocaleString() });
-                alert("Solicitud Enviada");
-            }
-        };
-
-        window.reclamarOferta = async (t) => {
-            const tel = prompt("Ingresa tu WhatsApp:"); if(!tel) return;
-            await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "RECLAMO", titulo: t, telefono: tel, estado: "Pendiente" });
-            alert("Reclamo enviado.");
-        };
-
-        window.showView = (id) => { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+        // CANJES Y DATOS
+        window.savePaymentData = async () => { const nom = document.getElementById('dat-nombre').value; const cue = document.getElementById('dat-cuenta').value; if(!nom || !cue) return alert("Faltan datos"); await updateDoc(userRef, { datosPago: { nombre: nom, cuenta: cue } }); alert("Datos Guardados"); };
+        window.solicitarCobro = async (premio) => { const s = await getDoc(userRef); if(balance < premio) return alert("Saldo insuficiente"); if(confirm("¿Cobrar Q"+premio+"?")){ await updateDoc(userRef, { saldo: balance - premio }); await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, monto: premio, estado: "Pendiente" }); alert("Solicitud enviada"); } };
     </script>
 </body>
 </html>
