@@ -2,151 +2,180 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Maya Casino VIP 🇬🇹</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --gold: #ffd700; --blue: #0092bc; --dark: #0f172a; --win: #22c55e; --card: #1e293b; --danger: #ef4444; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: #000; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--blue); }
+        
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1.5px, -1.5px) rotate(-1deg); } 100% { transform: translate(0px, 0px); } }
+        @keyframes slide { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        header { background: #000; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--blue); flex-shrink: 0; }
         .balance-pill { background: rgba(255, 215, 0, 0.1); padding: 8px 15px; border-radius: 50px; border: 2px solid var(--gold); font-size: 1.1rem; font-weight: bold; color: var(--gold); }
-        main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .view { display: none; width: 100%; max-width: 500px; animation: fadeIn 0.3s ease; text-align: center; }
+        
+        main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; padding-bottom: 80px; }
+        .view { display: none; width: 100%; max-width: 500px; animation: slide 0.3s ease-out; text-align: center; }
         .active { display: block; }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; width: 100%; }
-        .menu-card { background: var(--card); padding: 20px 10px; border-radius: 15px; border: 1px solid #334155; cursor: pointer; text-align: center; font-weight: bold; font-size: 0.9rem; }
-        .game-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; width: 100%; box-sizing: border-box; }
-
-        /* DADO 3D REAL */
-        .dice-table { width: 100%; height: 200px; background: radial-gradient(#15803d, #064e3b); border-radius: 20px; border: 6px solid #5d2b06; position: relative; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
-        .dice-scene { width: 60px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
-        .dice-face { position: absolute; width: 60px; height: 60px; background: white; border: 2px solid #ddd; display: flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; color: #000; border-radius: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
-        .f1 { transform: rotateY(0deg) translateZ(30px); }
-        .f2 { transform: rotateY(90deg) translateZ(30px); }
-        .f3 { transform: rotateY(180deg) translateZ(30px); }
-        .f4 { transform: rotateY(-90deg) translateZ(30px); }
-        .f5 { transform: rotateX(90deg) translateZ(30px); }
-        .f6 { transform: rotateX(-90deg) translateZ(30px); }
-        .rolling { animation: crazyRoll 0.2s infinite linear; }
-        @keyframes crazyRoll { from { transform: rotateX(0) rotateY(0) rotateZ(0); } to { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); } }
-
-        /* AVIATOR */
-        .aviator-sky { width: 100%; height: 200px; background: linear-gradient(#0f172a, #1e293b); border-radius: 15px; position: relative; overflow: hidden; border: 2px solid #334155; margin-bottom: 15px; }
-        .plane { position: absolute; bottom: 20px; left: 20px; font-size: 2.5rem; transition: all 0.1s linear; z-index: 10; }
-        .cloud { position: absolute; color: rgba(255,255,255,0.2); font-size: 2rem; animation: cloudMove 3s linear infinite; }
-        @keyframes cloudMove { from { right: -50px; } to { right: 110%; } }
-
-        /* SLOTS */
-        .slot-container { display: flex; justify-content: center; gap: 10px; background: #000; padding: 20px; border-radius: 15px; border: 4px solid #334155; margin-bottom: 20px; overflow: hidden; }
-        .slot-window { width: 80px; height: 100px; background: #fff; border-radius: 8px; overflow: hidden; position: relative; }
-        .reel-strip { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .slot-symbol { height: 100px; display: flex; justify-content: center; align-items: center; font-size: 3rem; color: #000; }
-        .blur { filter: blur(4px); }
-
-        .btn-play { background: var(--gold); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-back { background: none; color: #94a3b8; border: none; margin-top: 20px; cursor: pointer; text-decoration: underline; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; }
+        .menu-card { background: var(--card); padding: 15px 5px; border-radius: 12px; border: 1px solid #334155; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .menu-card:active { transform: scale(0.95); }
+        
+        .game-box { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #334155; width: 100%; box-sizing: border-box; margin-bottom: 15px; }
+        .btn-play { background: var(--gold); color: #000; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin: 8px 0; }
+        .btn-back { background: none; color: #94a3b8; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+        
+        input, select { width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid var(--blue); background: #000; color: white; text-align: center; font-size: 1rem; box-sizing: border-box; }
+        
+        .slot-reel { display: inline-block; width: 60px; height: 80px; background: #000; border-radius: 8px; line-height: 80px; font-size: 2.5rem; margin: 0 5px; }
+        .spinning { animation: shake 0.1s infinite; }
+        
         #win-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <div id="win-overlay">
-        <h1 style="color:var(--gold); font-size:3.5rem; margin:0;">¡GANASTE!</h1>
-        <div id="win-display-amt" style="font-size:2.5rem; margin:15px 0;">Q0.00</div>
-        <button class="btn-play" style="width: 200px;" onclick="closeWin()">CERRAR</button>
+        <h1 style="color:var(--gold); font-size:3rem;">¡GANASTE!</h1>
+        <div id="win-display-amt" style="font-size:2rem; margin-bottom: 20px;">Q0.00</div>
+        <button class="btn-play" style="width: 150px;" onclick="closeWin()">ACEPTAR</button>
     </div>
 
     <header>
-        <div><div style="font-weight: 900; color: var(--blue);">MAYA CASINO</div><div id="header-id" style="font-size: 0.7rem; color: #94a3b8;">ID: ...</div></div>
+        <div><div style="font-weight: 900; color: var(--blue);">MAYA CASINO</div><div id="header-id" style="font-size: 0.7rem;">ID: ...</div></div>
         <div class="balance-pill">Q <span id="balance">0.00</span></div>
     </header>
 
     <main>
         <div id="menu-view" class="view active">
-            <h2>🎰 SALÓN VIP</h2>
             <div class="grid">
-                <div class="menu-card" onclick="showView('credit-card-view')" style="border: 2px solid #ff4757; grid-column: span 2;">💳 MI TARJETA / CRÉDITO</div>
-                <div class="menu-card" onclick="showView('aviator-view')" style="border: 1px solid var(--danger);">✈️ AVIATOR</div>
-                <div class="menu-card" onclick="showView('dice-view')" style="border: 1px solid var(--win);">🎲 DADOS 3D</div>
-                <div class="menu-card" onclick="showView('slots-view')" style="border: 1px solid var(--gold);">🎰 SLOTS (x10)</div>
-                <div class="menu-card" onclick="showView('payment-view')" style="border-color: var(--blue);">💳 MIS DATOS</div>
-                <div class="menu-card" onclick="showView('exchange-view')" style="border-color: var(--win);">💰 COBRAR</div>
+                <div class="menu-card" onclick="showView('recharge-view')" style="border: 2px solid var(--win); grid-column: span 2; animation: pulse 2s infinite;">➕ RECARGAR SALDO</div>
+                <div class="menu-card" onclick="showView('trading-view')">📈 TRADING 5S</div>
+                <div class="menu-card" onclick="showView('aviator-view')" style="background:#7f1d1d;">✈️ AVIADOR</div>
+                <div class="menu-card" onclick="showView('slots-view')">🎰 SLOTS</div>
+                <div class="menu-card" onclick="showView('dice-view')">🎲 DADOS</div>
+                <div class="menu-card" onclick="showView('coin-view')">🪙 CARA/ESCUDO</div>
+                <div class="menu-card" onclick="showView('colors-view')">🔴 ROJO/BLANCO</div>
+                <div class="menu-card" onclick="showView('payment-view')">💳 MIS DATOS</div>
+                <div class="menu-card" onclick="showView('exchange-view')" style="grid-column: span 2; border: 2px solid var(--gold);">💰 RETIRAR EFECTIVO</div>
             </div>
         </div>
 
-        <div id="exchange-view" class="view">
-            <h2 style="color:var(--win)">💰 CANJEAR</h2>
+        <div id="recharge-view" class="view">
+            <h2>RECARGAR</h2>
             <div class="game-box">
-                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(12000, 100)">12k pts -> Q100</button>
-                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(25000, 200)">25k pts -> Q200</button>
-                <button class="btn-play" style="margin-bottom:10px" onclick="solicitarCobro(36000, 250)">36k pts -> Q250</button>
-                <button class="btn-play" onclick="solicitarCobro(65000, 335)">65k pts -> Q335</button>
+                <label style="font-size: 0.8rem; color: var(--blue);">Seleccione monto de recarga:</label>
+                <select id="recharge-select">
+                    <option value="20">Q20</option>
+                    <option value="40">Q40</option>
+                    <option value="60">Q60</option>
+                    <option value="80">Q80</option>
+                    <option value="100">Q100</option>
+                    <option value="120">Q120</option>
+                    <option value="140">Q140</option>
+                    <option value="150">Q150</option>
+                </select>
+                <button class="btn-play" style="background:#25d366; color:white;" onclick="irWhatsApp()">SOLICITAR POR WHATSAPP</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="dice-view" class="view">
-            <h2>🎲 DADOS 3D</h2>
+        <div id="trading-view" class="view">
+            <h2>TRADING 5S</h2>
             <div class="game-box">
-                <div class="dice-table">
-                    <div id="dice-cube" class="dice-scene">
-                        <div class="dice-face f1">1</div><div class="dice-face f2">2</div><div class="dice-face f3">3</div>
-                        <div class="dice-face f4">4</div><div class="dice-face f5">5</div><div class="dice-face f6">6</div>
-                    </div>
+                <div style="background:#000; padding:10px; border-radius:10px; position:relative;">
+                    <div id="trade-clock" style="position:absolute; right:10px; color:var(--gold);">05s</div>
+                    <canvas id="trade-canvas" style="width:100%; height:120px;"></canvas>
+                    <div id="trade-price" style="font-family:monospace; color:var(--win); font-size:1.5rem;">0.0000</div>
                 </div>
-                <input type="number" id="dice-guess" placeholder="Adivina (1-6)">
-                <input type="number" id="bet-dice" value="10">
-                <button id="btn-dice" class="btn-play" style="background:var(--win); color:white;" onclick="playDice()">LANZAR</button>
+                <input type="number" id="bet-trade" value="10">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-play" style="background:var(--win); color:white;" onclick="doTrade('UP')">SUBE</button>
+                    <button class="btn-play" style="background:var(--danger); color:white;" onclick="doTrade('DOWN')">BAJA</button>
+                </div>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
         <div id="aviator-view" class="view">
-            <h2>✈️ AVIATOR</h2>
+            <h2>AVIADOR</h2>
             <div class="game-box">
-                <div class="aviator-sky" id="sky">
-                    <div id="aviator-mult-display" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:3rem; font-weight:900;">1.00x</div>
-                    <div id="plane" class="plane">✈️</div>
+                <div style="background:#000; height:120px; border-radius:10px; position:relative; overflow:hidden;">
+                    <div id="plane-icon" style="position:absolute; bottom:20px; left:20px; font-size:2.5rem; transition: 0.5s;">✈️</div>
+                    <div id="mult-text" style="font-size:2.5rem; margin-top:30px; color:var(--gold);">1.00x</div>
                 </div>
                 <input type="number" id="bet-aviator" value="10">
-                <button id="btn-aviator" class="btn-play" style="background:var(--danger); color:white;" onclick="startAviator()">DESPEGAR</button>
+                <button id="btn-av-start" class="btn-play" onclick="startAv()">APOSTAR</button>
+                <button id="btn-av-cash" class="btn-play" style="background:var(--win); display:none;" onclick="cashAv()">RETIRAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
         <div id="slots-view" class="view">
-            <h2>🎰 SLOTS</h2>
+            <h2>MEGA SLOTS</h2>
             <div class="game-box">
-                <div class="slot-container"><div id="reel1" class="reel-strip"></div><div id="reel2" class="reel-strip"></div><div id="reel3" class="reel-strip"></div></div>
+                <div style="margin-bottom:15px;">
+                    <div id="s1" class="slot-reel">❓</div><div id="s2" class="slot-reel">❓</div><div id="s3" class="slot-reel">❓</div>
+                </div>
                 <input type="number" id="bet-slots" value="10">
-                <button id="btn-slots-spin" class="btn-play" onclick="playSlots()">GIRAR</button>
+                <button id="btn-spin" class="btn-play" onclick="playSlots()">GIRAR</button>
+            </div>
+            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
+        </div>
+
+        <div id="dice-view" class="view">
+            <h2>DADOS</h2>
+            <div class="game-box">
+                <div id="dice-res" style="font-size:5rem; transition:0.3s;">🎲</div>
+                <input type="number" id="dice-guess" placeholder="Número 1-6">
+                <input type="number" id="bet-dice" value="10">
+                <button class="btn-play" onclick="playDice()">LANZAR</button>
+            </div>
+            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
+        </div>
+
+        <div id="coin-view" class="view">
+            <h2>CARA O ESCUDO</h2>
+            <div class="game-box">
+                <div id="coin-res" style="font-size:5rem;">🪙</div>
+                <select id="coin-sel"><option value="CARA">CARA</option><option value="ESCUDO">ESCUDO</option></select>
+                <input type="number" id="bet-coin" value="10">
+                <button class="btn-play" onclick="playCoin()">LANZAR</button>
+            </div>
+            <button class="btn-back" onclick="showView('menu-view')">Volver</button>
+        </div>
+
+        <div id="colors-view" class="view">
+            <h2>ROJO O BLANCO</h2>
+            <div class="game-box">
+                <div id="color-res" style="font-size:5rem;">❓</div>
+                <select id="color-sel"><option value="ROJO">ROJO 🔴</option><option value="BLANCO">BLANCO ⚪</option></select>
+                <input type="number" id="bet-color" value="10">
+                <button class="btn-play" onclick="playColor()">APOSTAR</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
         <div id="payment-view" class="view">
-            <h2>💳 MIS DATOS</h2>
+            <h2>MIS DATOS BANCARIOS</h2>
             <div class="game-box">
-                <input type="text" id="dat-nombre" placeholder="Nombre Titular">
-                <input type="number" id="dat-cuenta" placeholder="Número de Cuenta">
-                <select id="dat-banco"><option>Banrural</option><option>Industrial</option><option>G&T</option><option>BAM</option><option>BAC</option></select>
-                <button class="btn-play" onclick="savePaymentData()">GUARDAR DATOS</button>
+                <input type="text" id="db-nombre" placeholder="Nombre Completo">
+                <input type="number" id="db-cuenta" placeholder="Número de Cuenta">
+                <select id="db-banco"><option>Banrural</option><option>Industrial</option><option>G&T</option></select>
+                <button class="btn-play" onclick="saveData()">GUARDAR DATOS</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
 
-        <div id="credit-card-view" class="view">
-            <h2>💳 MI TARJETA GOLD</h2>
+        <div id="exchange-view" class="view">
+            <h2>RETIRAR EFECTIVO</h2>
             <div class="game-box">
-                <div style="background:linear-gradient(135deg, #001f3f, #0092bc); padding:20px; border-radius:15px; height:150px; text-align:left;">
-                    <div style="text-align:right">Q <span id="v-card-balance">0.00</span></div>
-                    <div id="v-card-name" style="margin-top:60px; font-weight:bold;">...</div>
-                </div>
-                <div id="request-section" style="margin-top:15px;"><button class="btn-play" onclick="requestCard()">SOLICITAR TARJETA</button></div>
-                <div id="transfer-section" style="display:none; margin-top:15px;"><input type="number" id="transfer-amount" placeholder="Monto Q"><button class="btn-play" onclick="transferToCasino()">PASAR AL JUEGO</button></div>
+                <p style="color:var(--gold);">Mínimo de retiro: Q60.00</p>
+                <input type="number" id="ex-amount" placeholder="Monto a retirar">
+                <button class="btn-play" style="background:var(--win); color:white;" onclick="solicitarRetiro()">SOLICITAR RETIRO</button>
             </div>
             <button class="btn-back" onclick="showView('menu-view')">Volver</button>
         </div>
@@ -154,126 +183,123 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDusYsceOFaSRl7a9UNjYYVVX4scR2J2iY", authDomain: "cacino-ff54f.firebaseapp.com", projectId: "cacino-ff54f", storageBucket: "cacino-ff54f.firebasestorage.app", messagingSenderId: "783971947416", appId: "1:783971947416:web:21001456f59817888511ed" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-        let userId = localStorage.getItem('casino_id') || "MAYA_" + Math.random().toString(36).substring(7).toUpperCase();
-        localStorage.setItem('casino_id', userId); document.getElementById('header-id').innerText = "ID: " + userId;
-        
-        let balance = 0, cardBalance = 0;
-        const userRef = doc(db, "usuarios", userId);
+        window.userId = localStorage.getItem('casino_id') || "MAYA_" + Math.random().toString(36).substring(7).toUpperCase();
+        localStorage.setItem('casino_id', userId);
+        document.getElementById('header-id').innerText = "ID: " + userId;
+
+        let balance = 0; const userRef = doc(db, "usuarios", userId);
 
         onSnapshot(userRef, (s) => {
             if(s.exists()){
-                const d = s.data(); balance = d.saldo || 0; cardBalance = d.saldoTarjeta || 0;
-                document.getElementById('balance').innerText = balance.toLocaleString();
-                document.getElementById('v-card-balance').innerText = cardBalance.toLocaleString();
-                if(d.tarjetaAprobada){
-                    document.getElementById('v-card-name').innerText = d.nombreTarjeta || "SOCIO VIP";
-                    document.getElementById('request-section').style.display = 'none';
-                    document.getElementById('transfer-section').style.display = 'block';
+                balance = s.data().saldo || 0;
+                document.getElementById('balance').innerText = balance.toFixed(2);
+                if(s.data().datosPago){
+                    document.getElementById('db-nombre').value = s.data().datosPago.nombre || "";
+                    document.getElementById('db-cuenta').value = s.data().datosPago.cuenta || "";
                 }
-            } else { setDoc(userRef, { saldo: 0, saldoTarjeta: 0 }); }
+            } else { setDoc(userRef, { saldo: 0 }); }
         });
 
-        // --- COBROS (CONEXIÓN CON PANEL) ---
-        window.solicitarCobro = async (pts, cash) => {
-            const s = await getDoc(userRef); const d = s.data().datosPago;
-            if(!d || !d.nombre) { alert("Primero llena 'MIS DATOS'"); showView('payment-view'); return; }
-            if(balance < pts) return alert("Puntos insuficientes");
-            const phone = prompt("Tu WhatsApp para el pago:");
-            if(phone && phone.length >= 8){
-                await updateDoc(userRef, { saldo: balance - pts });
-                await addDoc(collection(db, "solicitudes_globales"), {
-                    usuario: userId, tipo: "COBRO", monto: cash, puntos: pts,
-                    telefono: phone, nombre: d.nombre, cuenta: d.cuenta, banco: d.banco,
-                    estado: "Pendiente", fecha: new Date().toLocaleString()
-                });
-                alert("¡Solicitud enviada al Admin!");
-            }
-        };
-
-        // --- DADOS 3D ---
-        window.playDice = async () => {
-            const bet = parseFloat(document.getElementById('bet-dice').value);
-            const guess = parseInt(document.getElementById('dice-guess').value);
-            const cube = document.getElementById('dice-cube');
-            if(isNaN(guess) || guess < 1 || guess > 6 || bet > balance || bet <= 0) return;
-            document.getElementById('btn-dice').disabled = true;
-            cube.classList.add('rolling');
-            setTimeout(async () => {
-                const res = Math.floor(Math.random() * 6) + 1;
-                cube.classList.remove('rolling');
-                const rot = { 1:'rotateX(0deg) rotateY(0deg)', 2:'rotateY(-90deg)', 3:'rotateY(-180deg)', 4:'rotateY(90deg)', 5:'rotateX(-90deg)', 6:'rotateX(90deg)' };
-                cube.style.transform = rot[res];
-                setTimeout(async () => {
-                    if(res === guess) { const win = bet * 5; await updateDoc(userRef, { saldo: balance + (win - bet) }); celebrateWin(win); }
-                    else { await updateDoc(userRef, { saldo: balance - bet }); }
-                    document.getElementById('btn-dice').disabled = false;
-                }, 800);
-            }, 1200);
-        };
-
-        // --- AVIATOR ---
-        let aviActive = false;
-        window.startAviator = async () => {
-            const bet = parseFloat(document.getElementById('bet-aviator').value);
-            if(bet > balance || aviActive) return;
-            aviActive = true; const btn = document.getElementById('btn-aviator');
-            btn.innerText = "COBRAR"; let mult = 1.00; const crash = (Math.random()*4+1.1).toFixed(2);
-            const plane = document.getElementById('plane');
-            const loop = setInterval(async () => {
-                mult += 0.03; document.getElementById('aviator-mult-display').innerText = mult.toFixed(2)+"x";
-                plane.style.bottom = (20+(mult*15))+"px"; plane.style.left = (20+(mult*12))+"px";
-                if(mult >= crash){
-                    clearInterval(loop); aviActive=false; document.getElementById('aviator-mult-display').innerText = "BOOM!";
-                    await updateDoc(userRef, { saldo: balance - bet });
-                    setTimeout(()=>{btn.innerText="DESPEGAR"; btn.onclick=startAviator;}, 2000);
-                }
-            }, 100);
-            btn.onclick = async () => {
-                if(aviActive){
-                    clearInterval(loop); aviActive=false; const win = Math.floor(bet * parseFloat(document.getElementById('aviator-mult-display').innerText));
-                    await updateDoc(userRef, { saldo: balance + (win - bet) }); celebrateWin(win);
-                    btn.innerText="DESPEGAR"; btn.onclick=startAviator;
-                }
-            };
-        };
-
-        // --- SLOTS ---
-        const syms = ["💎", "7️⃣", "⭐", "🍒", "🍋", "🔔", "🍉", "🍇"];
-        const strips = document.querySelectorAll('.reel-strip');
-        strips.forEach(s => { s.innerHTML = Array(40).fill(0).map(() => `<div class="slot-symbol">${syms[Math.floor(Math.random()*8)]}</div>`).join(''); });
-        window.playSlots = async () => {
-            const b = parseFloat(document.getElementById('bet-slots').value);
-            if(b > balance || b <= 0) return;
-            const btn = document.getElementById('btn-slots-spin'); btn.disabled = true;
-            const res = (Math.random() < 0.2) ? Array(3).fill(syms[Math.floor(Math.random()*8)]) : [syms[Math.floor(Math.random()*8)], syms[Math.floor(Math.random()*8)], syms[Math.floor(Math.random()*8)]];
-            strips.forEach((s, i) => {
-                s.classList.add('blur'); s.lastElementChild.innerText = res[i];
-                s.style.transition = `transform ${1.5+(i*0.5)}s cubic-bezier(0.45,0.05,0.55,0.95)`;
-                s.style.transform = `translateY(-${(s.children.length-1)*100}px)`;
-            });
-            setTimeout(async () => {
-                if(res[0] === res[1] && res[1] === res[2]) { const w = b*10; await updateDoc(userRef, { saldo: balance + w }); celebrateWin(w); }
-                else { await updateDoc(userRef, { saldo: balance - b }); }
-                setTimeout(() => { strips.forEach(s => { s.classList.remove('blur'); s.style.transition='none'; s.style.transform='translateY(0px)'; s.firstElementChild.innerText=s.lastElementChild.innerText; }); btn.disabled=false; }, 500);
-            }, 3000);
-        };
-
-        // --- GENERALES ---
-        window.savePaymentData = async () => {
-            const n = document.getElementById('dat-nombre').value; const c = document.getElementById('dat-cuenta').value;
-            const b = document.getElementById('dat-banco').value;
-            if(n && c) { await updateDoc(userRef, { datosPago: { nombre: n, cuenta: c, banco: b } }); alert("Datos guardados."); }
-        };
-        window.celebrateWin = (a) => { document.getElementById('win-display-amt').innerText = "Q" + a.toLocaleString(); document.getElementById('win-overlay').style.display = "flex"; confetti({ particleCount: 150 }); };
-        window.closeWin = () => { document.getElementById('win-overlay').style.display = "none"; };
         window.showView = (id) => { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); };
-        window.transferToCasino = async () => { const a = parseFloat(document.getElementById('transfer-amount').value); if(a > 0 && a <= cardBalance) await updateDoc(userRef, { saldo: balance + a, saldoTarjeta: cardBalance - a }); };
-        window.requestCard = async () => { await addDoc(collection(db, "solicitudes_globales"), { usuario: userId, tipo: "SOLICITUD_TARJETA", estado: "Pendiente" }); alert("Solicitud enviada."); };
+        window.closeWin = () => { document.getElementById('win-overlay').style.display = "none"; };
+        window.celebrateWin = (a) => { document.getElementById('win-display-amt').innerText = "Q" + a.toFixed(2); document.getElementById('win-overlay').style.display = "flex"; confetti(); };
+        window.irWhatsApp = () => { 
+            const monto = document.getElementById('recharge-select').value;
+            window.location.href = `https://wa.me/50230732150?text=Hola, quiero recargar Q${monto}. Mi ID de usuario es: ${userId}`; 
+        };
+        window.saveData = async () => {
+            const n = document.getElementById('db-nombre').value, c = document.getElementById('db-cuenta').value, b = document.getElementById('db-banco').value;
+            if(n && c) { await updateDoc(userRef, { datosPago: { nombre: n, cuenta: c, banco: b } }); alert("Datos guardados con éxito"); }
+        };
+
+        const canvas = document.getElementById('trade-canvas'); const ctx = canvas.getContext('2d');
+        let pts = Array(20).fill(60);
+        function draw(){
+            ctx.clearRect(0,0,300,150); ctx.strokeStyle="#0092bc"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(0,pts[0]);
+            for(let i=1;i<20;i++)ctx.lineTo(i*15,pts[i]); ctx.stroke();
+            pts.shift(); pts.push(Math.max(10,Math.min(110,pts[18]+(Math.random()-0.5)*20)));
+            document.getElementById('trade-price').innerText = (100-pts[19]).toFixed(4);
+            setTimeout(draw, 200);
+        } draw();
+
+        window.doTrade = async (dir) => {
+            const b = parseFloat(document.getElementById('bet-trade').value); if(b > balance || b < 1) return;
+            await updateDoc(userRef, { saldo: balance - b });
+            const startP = parseFloat(document.getElementById('trade-price').innerText);
+            let sec = 5;
+            const intv = setInterval(() => {
+                sec--; document.getElementById('trade-clock').innerText = `0${sec}s`;
+                if(sec <= 0){
+                    clearInterval(intv); document.getElementById('trade-clock').innerText = "05s";
+                    const casa = Math.random() < 0.8;
+                    let endP = casa ? (dir==='UP'?startP-0.001:startP+0.001) : parseFloat(document.getElementById('trade-price').innerText);
+                    if((dir==='UP'&&endP>startP)||(dir==='DOWN'&&endP<startP)){ updateDoc(userRef,{saldo:balance+(b*2)}); celebrateWin(b*2); } else { alert("Pronóstico incorrecto"); }
+                }
+            }, 1000);
+        };
+
+        window.playSlots = async () => {
+            const b = parseFloat(document.getElementById('bet-slots').value); if(b > balance) return;
+            const rEls = [document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3')];
+            rEls.forEach(e => e.classList.add('spinning'));
+            setTimeout(async () => {
+                rEls.forEach(e => e.classList.remove('spinning'));
+                const i = ["💎","🍒","⭐","7️⃣"]; const res = [i[Math.floor(Math.random()*4)],i[Math.floor(Math.random()*4)],i[Math.floor(Math.random()*4)]];
+                rEls.forEach((e,idx) => e.innerText = res[idx]);
+                if(res[0]===res[1] && res[1]===res[2]){ await updateDoc(userRef,{saldo:balance+(b*10)}); celebrateWin(b*10); } else { await updateDoc(userRef,{saldo:balance-b}); }
+            }, 1000);
+        };
+
+        window.playDice = async () => {
+            const b = parseFloat(document.getElementById('bet-dice').value), g = parseInt(document.getElementById('dice-guess').value); if(b > balance || !g) return;
+            const d = document.getElementById('dice-res'); d.style.transform = "rotate(360deg)";
+            setTimeout(async () => {
+                const r = Math.floor(Math.random()*6)+1; d.innerText = ["","⚀","⚁","⚂","⚃","⚄","⚅"][r]; d.style.transform = "rotate(0deg)";
+                if(r === g){ await updateDoc(userRef,{saldo:balance+(b*5)}); celebrateWin(b*5); } else { await updateDoc(userRef,{saldo:balance-b}); }
+            }, 500);
+        };
+
+        window.playCoin = async () => {
+            const b = parseFloat(document.getElementById('bet-coin').value), s = document.getElementById('coin-sel').value; if(b > balance) return;
+            const res = Math.random() < 0.5 ? "CARA" : "ESCUDO"; document.getElementById('coin-res').innerText = (res==="CARA"?"🪙":"🛡️");
+            if(res === s){ await updateDoc(userRef,{saldo:balance+b}); celebrateWin(b*2); } else { await updateDoc(userRef,{saldo:balance-b}); }
+        };
+
+        window.playColor = async () => {
+            const b = parseFloat(document.getElementById('bet-color').value), s = document.getElementById('color-sel').value; if(b > balance) return;
+            const casa = Math.random() < 0.85; 
+            const final = casa ? (s==="ROJO"?"BLANCO":"ROJO") : (Math.random()<0.5?"ROJO":"BLANCO");
+            document.getElementById('color-res').innerText = (final==="ROJO"?"🔴":"⚪");
+            if(final === s){ await updateDoc(userRef,{saldo:balance+b}); celebrateWin(b*2); } else { await updateDoc(userRef,{saldo:balance-b}); }
+        };
+
+        let avActive = false;
+        window.startAv = async () => {
+            const b = parseFloat(document.getElementById('bet-aviator').value); if(b > balance || avActive) return;
+            await updateDoc(userRef, { saldo: balance - b }); avActive = true; let mult = 1.0;
+            const plane = document.getElementById('plane-icon'); plane.style.left = "70%"; plane.style.bottom = "70px";
+            document.getElementById('btn-av-start').style.display='none'; document.getElementById('btn-av-cash').style.display='block';
+            let crash = 1.1 + Math.random()*2.5;
+            let intv = setInterval(() => {
+                mult += 0.05; document.getElementById('mult-text').innerText = mult.toFixed(2)+"x";
+                if(mult >= crash){ clearInterval(intv); avActive = false; plane.style.left="20px"; plane.style.bottom="20px"; document.getElementById('btn-av-start').style.display='block'; document.getElementById('btn-av-cash').style.display='none'; }
+            }, 100);
+            window.cashAv = async () => { if(!avActive) return; clearInterval(intv); await updateDoc(userRef,{saldo:balance+(b*mult)}); celebrateWin(b*mult); avActive=false; plane.style.left="20px"; plane.style.bottom="20px"; document.getElementById('btn-av-start').style.display='block'; document.getElementById('btn-av-cash').style.display='none'; };
+        };
+
+        window.solicitarRetiro = async () => {
+            const a = parseFloat(document.getElementById('ex-amount').value);
+            if(a >= 60 && a <= balance){
+                await updateDoc(userRef, { saldo: balance - a });
+                await addDoc(collection(db, "solicitudes_globales"), { user: userId, monto: a, tipo: "RETIRO", fecha: new Date().toLocaleString() });
+                alert("Solicitud de retiro enviada correctamente");
+            } else { alert("Error: Saldo insuficiente o monto inferior a Q60"); }
+        };
     </script>
 </body>
 </html>
